@@ -55,7 +55,7 @@ if [ "$DISPLAYSERVER" = "xorg-server" ]; then
   PKG_DEPENDS="$PKG_DEPENDS libXrandr"
 
   # for SDL support
-  PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS SDL SDL_image"
+  PKG_BUILD_DEPENDS="$PKG_BUILD_DEPENDS SDL SDL_image SDL_mixer"
   PKG_DEPENDS="$PKG_DEPENDS SDL SDL_image"
 fi
 
