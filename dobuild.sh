@@ -91,7 +91,7 @@ if [ $devbuild -eq 1 ];then
 fi
 
 scriptdir=$(cd `dirname $0` && pwd)
-outfilename="$distroname-RPi.arm-$version"
+outfilename="$distroname-ION.x86_64-$version"
 tmpdir="$scriptdir/tmp"
 outimagename="$distroname-$version.img"
 outimagefile="$tmpdir/$outimagename"
@@ -123,7 +123,7 @@ function build {
 
 # create image file
 function create_image {
-    echo "Creating SD image"
+    echo "Creating VM image"
     mkdir -p $tmpdir
     rm -rf $tmpdir/*
     cp "$targetdir/$outfilename".tar $tmpdir
@@ -131,23 +131,11 @@ function create_image {
     echo "  Extracting release tarball..."
     tar -xpf "$tmpdir/$outfilename".tar -C $tmpdir
     
-    echo "  Setup loopback device..."
-    if [ "`losetup -f`" != "/dev/loop0" ];then
-        umount /dev/loop0
-        losetup -d /dev/loop0  || eval 'echo "It demands loop0 instead of first free loopback device... : (" ; exit 1'
-    fi
-    
-    losetup -d /dev/loop0 || [ echo "It demands loop0 instead of first free device... : (" && exit 1 ]
-    loopback=`losetup -f`
-    
-    echo "  Prepare image file..."
-    dd if=/dev/zero of=$outimagefile bs=1M count=1500
-    
     echo "  Write data to image..."
     cd $tmpdir/$outfilename
-    ./create_sdcard  $loopback $outimagefile
+    sudo ./create_virtualimage "$tmpdir" 2048 
     
-    echo "Created SD image at $outimagefile"
+    echo "Created SD image at $tmpdir"
 }
 
 
