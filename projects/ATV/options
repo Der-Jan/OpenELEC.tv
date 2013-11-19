@@ -41,7 +41,7 @@
       #               i686 i586 i486 i386
       # (VIA CPUs)    c3 c3-2
       #
-      TARGET_CPU="pentium-m"
+      TARGET_CPU="i686"
       ;;
 
     x86_64)
@@ -86,7 +86,7 @@
   OPTIMIZATIONS="size"
 
 # Project CFLAGS
-  PROJECT_CFLAGS=""
+  PROJECT_CFLAGS="-mmmx -msse -msse2 -mfpmath=sse"
 
 # LTO (Link Time Optimization) support
   LTO_SUPPORT="yes"
@@ -248,6 +248,9 @@
 
 # Windowmanager to use (ratpoison / none)
   WINDOWMANAGER="ratpoison"
+
+# include uvesafb support (yes / no)
+  UVESAFB_SUPPORT="no"
 
 # Displayserver to use (xorg-server / no)
   DISPLAYSERVER="xorg-server"
