@@ -32,6 +32,7 @@ mkdir -p $INSTALL/usr/bin
 
 mkdir -p $INSTALL/usr/lib/plexhometheater/system
   cp $PKG_BUILD/build/plex/plexhometheater $INSTALL/usr/lib/plexhometheater
+  cp $PKG_BUILD/build/xbmc-xrandr $INSTALL/usr/lib/plexhometheater
 
 cd $PKG_BUILD
 find build/lib -not \( -name CMakeFiles -prune \) \
