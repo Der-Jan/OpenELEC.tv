@@ -31,9 +31,6 @@ fi
   ifconfig lo 127.0.0.1 netmask 255.0.0.0
   ifconfig lo up
 
-# e100 bug? works after ethtool -t
-  ethtool -t eth0
-
 # creating initial settings file
   progress "creating initial connman settings file"
   if [ ! -f $CONFIG_CACHE/connman/settings ]; then
