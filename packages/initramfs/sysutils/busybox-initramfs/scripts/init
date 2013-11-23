@@ -35,7 +35,8 @@
   UPDATE_SYSTEM="SYSTEM"
   IMAGE_KERNEL="KERNEL"
   IMAGE_SYSTEM="SYSTEM"
-
+  BOOT_ROOT=/flash
+  
   BOOT_STEP="start"
   REBOOT="0"
   MD5_FAILED="0"
@@ -307,10 +308,9 @@
   }
 
   update_bootloader() {
-    export BOOT_ROOT="/flash"
     export SYSTEM_ROOT="/sysroot"
 
-    mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
+    mount_part "$BOOT_ROOT/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
 
     if [ -f $SYSTEM_ROOT/usr/share/bootloader/update.sh ]; then
       echo "updating Bootloader..."
@@ -370,8 +370,8 @@
 
       if [ -e /dev/fb0 ]; then
         # load splash
-        if [ -f /flash/oemsplash.png ]; then
-          SPLASHIMAGE="/flash/oemsplash.png"
+        if [ -f ${BOOT_ROOT}/oemsplash.png ]; then
+          SPLASHIMAGE="${BOOT_ROOT}/oemsplash.png"
         elif [ -f /splash/splash.conf ]; then
           . /splash/splash.conf
         fi
@@ -402,7 +402,7 @@
     if [ -n "$disk" ]; then
       if [ "${disk%%=*}" = "FILE" ]; then
         target="${disk%%,*}"
-        storage_loop_file="/flash/${target#*=}"
+        storage_loop_file="${BOOT_ROOT}/${target#*=}"
         mount -o remount,rw /flash
 
         if [ ! -f "$storage_loop_file" ]; then
@@ -432,7 +432,7 @@
             fi
           fi
 
-          mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
+          mount_part "${BOOT_ROOT}/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
           echo "Creating empty file, this can take a long time..."
           dd if=/dev/zero of="$storage_loop_file" bs=1M count=$STORAGE_USE &>/dev/null
           echo "Formating to EXT4 filesystem, this can take a long time..."
@@ -474,7 +474,7 @@
     progress "Checking for updates"
 
     # check for ATV1 mach-o-kernel
-      if [ -f "/flash/com.apple.Boot.plist" -a -f "/flash/boot.efi" ]; then
+      if [ -f "${BOOT_ROOT}/com.apple.Boot.plist" -a -f "${BOOT_ROOT}/boot.efi" ]; then
         UPDATE_KERNEL="MACH_KERNEL"
       fi
 
@@ -501,8 +501,8 @@
       # get sizes
       FLASH_FREE=$(df /flash/ | awk '/[0-9]%/{print $4}')
       FLASH_FREE=$(( $FLASH_FREE * 1024 ))
-      OLD_KERNEL=$(stat -t "/flash/$IMAGE_KERNEL" | awk '{print $2}')
-      OLD_SYSTEM=$(stat -t "/flash/$IMAGE_SYSTEM" | awk '{print $2}')
+      OLD_KERNEL=$(stat -t "${BOOT_ROOT}/$IMAGE_KERNEL" | awk '{print $2}')
+      OLD_SYSTEM=$(stat -t "${BOOT_ROOT}/$IMAGE_SYSTEM" | awk '{print $2}')
       NEW_KERNEL=$(stat -t "$UPDATE_DIR/$UPDATE_KERNEL" | awk '{print $2}')
       NEW_SYSTEM=$(stat -t "$UPDATE_DIR/$UPDATE_SYSTEM" | awk '{print $2}')
 
@@ -523,8 +523,8 @@
       if [ "$SIZE_FAILED" -eq "0" ] ; then
         # update if md5 check is ok or .nocheck exists
         if [ "$MD5_FAILED" -eq "0" -o "$MD5_NOCHECK" -eq "1" ] ; then
-          update "Kernel" "$UPDATE_KERNEL" "/flash/$IMAGE_KERNEL"
-          update "System" "$UPDATE_SYSTEM" "/flash/$IMAGE_SYSTEM"
+          update "Kernel" "$UPDATE_KERNEL" "${BOOT_ROOT}/$IMAGE_KERNEL"
+          update "System" "$UPDATE_SYSTEM" "${BOOT_ROOT}/$IMAGE_SYSTEM"
           update_bootloader
           REBOOT="1"
         else
@@ -553,9 +553,9 @@
     progress "Preparing system"
 
     if [ "$SYSTEM_TORAM" = "no" -o "$INSTALLED_MEMORY" -lt "$SYSTEM_TORAM_LIMIT" ]; then
-      mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
+      mount_part "${BOOT_ROOT}/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
     else
-      cp /flash/$IMAGE_SYSTEM /dev/$IMAGE_SYSTEM
+      cp ${BOOT_ROOT}/$IMAGE_SYSTEM /dev/$IMAGE_SYSTEM
       mount_part "/dev/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
     fi
 
