@@ -24,9 +24,9 @@ KEY_GREEN        = KEY_GREEN            # Green
 KEY_YELLOW       = KEY_YELLOW           # Yellow
 KEY_BLUE         = KEY_BLUE             # Blue
 
-KEY_INFO         = KEY_INFO             # Display
+KEY_INFO         = KEY_I                # Display
 KEY_MENU         = KEY_MENU             # Top Menu
-KEY_CONTEXT_MENU = KEY_EPG              # Pop UP/MENU
+KEY_CONTEXT_MENU = KEY_C                # Pop UP/MENU
 KEY_ESC          = KEY_EXIT             # Return
 
 KEY_BACK         = KEY_EXIT             # Back
