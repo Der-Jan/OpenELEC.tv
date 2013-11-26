@@ -1,6 +1,6 @@
 # PS3 Bluetooth remote
 
-KEY_EJECTCD      = KEY_EJECT            # Eject
+KEY_EJECTCD      = KEY_POWER            # Eject
 
 KEY_1            = KEY_NUMERIC_1        # 1
 KEY_2            = KEY_NUMERIC_2        # 2

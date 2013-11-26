@@ -3,7 +3,6 @@
 # options
 version=""
 devbuild=0
-testing=0
 sourceforge=0
 force_pht_rebuild=0
 force_pht_update=0
@@ -16,8 +15,7 @@ function usage {
     echo "$0 usage:
     [-h | --help]             : print this usage info
      -v | --version <version> : set the rasplex version
-  [ [-d | --devbuild] |       : create a developer build
-    [-t | --testing]  ]       : create a testing build
+    [-d | --devbuild]         : create a developer build
     [-s | --sourceforge]      : upload the image to sourceforge
     [--user <user>]           : the sourceforge user to use
     
@@ -49,9 +47,6 @@ while true; do
         -d|--devbuild)
             devbuild=1
             ;;
-        -t|--testing)
-            testing=1
-            ;;
         -s|--sourceforge)
             sourceforge=1
             ;;
@@ -78,7 +73,6 @@ while true; do
 done
 
 # validate settings
-[ $devbuild -eq 1 -a $testing -eq 1 ] && echo "--debug and --testing can't used together" && exit 1
 [ -z "$version" ] && echo "Missing version number" && usage && exit 1
 
 # setup variables
@@ -153,45 +147,14 @@ function upload_sourceforge {
     
     echo "  uploading autoupdate package"
     time scp "$outfilename".tar "$user@frs.sourceforge.net:$projectdir/autoupdate/$distroname/"
-    
-    # enable auto-update for none-testing builds    
-    if [ $testing -eq 0 ]; then
-        echo "  setting latest version..."
-        echo "$outfilename" > latest
-        time scp latest "$user@frs.sourceforge.net:$projectdir/autoupdate/$distroname/"
-        rm latest
-    fi
-    
+     
     echo "  uploading install image"
     if [ $devbuild -eq 1 ];then
         releasedir="development"
     else
         releasedir="release"
     fi
-    time scp "$outimagefile.gz" "$user@frs.sourceforge.net:$projectdir/$releasedir/"
-    
-
-    if [ $devbuild -eq 0 ]; then
-        # update current stable release info
-        if [ $testing -eq 0 ]; then
-            echo "  setting current version info"
-            echo "$projectdlbase/$releasedir/$outimagename.gz/download" >current
-            time scp current "$user@frs.sourceforge.net:$projectdir/$releasedir/"
-            rm current
-        fi
-    
-        # update bleeding release info
-        ## update bleeding info on newer stable release too
-        bleedingurl="$projectdlbase/$releasedir/$outimagename.gz/download"
-        bleedingcurrent=`wget -q -O - "$projectdlbase/$releasedir/bleeding/download"`
-        if [ $testing -eq 1 -o "$bleedingurl" \> "$bleedingcurrent" ]; then
-            echo "  setting bleeding version info"
-            echo "$bleedingurl" >bleeding
-            time scp bleeding "$user@frs.sourceforge.net:$projectdir/$releasedir/"
-            rm bleeding
-        fi
-    fi
-    
+    time scp "$outimagefile.gz" "$user@frs.sourceforge.net:$projectdir/$releasedir/"    
 }
 
 # main
