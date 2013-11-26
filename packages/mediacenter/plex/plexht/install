@@ -30,6 +30,7 @@ mkdir -p $INSTALL/usr/bin
   cp $PKG_DIR/scripts/setwakeup.sh $INSTALL/usr/bin
   cp $PKG_BUILD/tools/EventClients/Clients/XBMC\ Send/xbmc-send.py $INSTALL/usr/bin/xbmc-send
 
+mkdir -p $INSTALL/usr/lib/plexhometheater/system/players/dvdplayer/
 mkdir -p $INSTALL/usr/lib/plexhometheater/system
   cp $PKG_BUILD/build/plex/plexhometheater $INSTALL/usr/lib/plexhometheater
   cp $PKG_BUILD/build/xbmc-xrandr $INSTALL/usr/lib/plexhometheater
@@ -40,6 +41,16 @@ find build/lib -not \( -name CMakeFiles -prune \) \
     -not -iregex ".*svn.*|.*win32(dx)?\.vis|.*osx\.vis" \
     -iregex ".*-linux.*|.*-arm.*|.*\.vis|.*\.xbs" \
     -exec cp "{}" $ROOT/$INSTALL/usr/lib/plexhometheater/system/ ";"
+
+
+
+#need to copy over ffmpeg libs
+for i in `find build/lib/ffmpeg/ffmpeg/lib/ \
+    -regextype posix-extended -type f \
+    -iregex '.*so.*'` ;  do
+    cp $i $ROOT/$INSTALL/usr/lib/plexhometheater/system/players/dvdplayer/`basename $(echo $i | sed  -r 's:lib([a-zA-Z]+)\\.so\\.([0-9]*).*:\1-\2-arm.so:')`
+done
+
 
   find system addons \
     -regextype posix-extended -type f \
