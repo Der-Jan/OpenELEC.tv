@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "Starting sync"
+time rsync -r --delete . ../../plex-home-theater --exclude=build --exclude=`basename $0` --filter='P .git' 
+#rm ../../plex-home-theater/`basename $0`
+echo "Sync complete"
