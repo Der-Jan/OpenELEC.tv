@@ -6,6 +6,8 @@ devbuild=0
 sourceforge=0
 force_pht_rebuild=0
 force_pht_update=0
+project=ION
+arch=x86_64
 
 #read default settings
 settingsfile=~/.rasplex
@@ -80,7 +82,7 @@ if [ $devbuild -eq 1 ];then
 fi
 
 scriptdir=$(cd `dirname $0` && pwd)
-outfilename="$distroname-ION.x86_64-$version"
+outfilename="$distroname-$project.$arch-$version"
 tmpdir="$scriptdir/tmp"
 outimagename="$distroname-$version.img"
 outimagefile="$tmpdir/$outimagename"
@@ -101,22 +103,22 @@ function build {
 
     source $scriptdir/config/version
 
-    rm -rf  $scriptdir/build.rasplex-RPi.arm-$OPENELEC_VERSION/plexht-RP-*
-    mkdir -p $scriptdir/build.rasplex-RPi.arm-$OPENELEC_VERSION/plexht-RP-$version
+    rm -rf  $scriptdir/build.rasplex-$project.$arch-$OPENELEC_VERSION/plexht-$project-*
+    mkdir -p $scriptdir/build.rasplex-$project.$arch-$OPENELEC_VERSION/plexht-$project-$version
     if [ $force_pht_update -eq 1 ]; then
         rm -r "sources/plexht"
-        rm -r "$scriptdir/build.rasplex-RPi.arm-$OPENELEC_VERSION/.stamps/plexht"
+        rm -r "$scriptdir/build.rasplex-$project.$arch-$OPENELEC_VERSION/.stamps/plexht"
     elif [ $force_pht_rebuild -eq 1 ]; then
-        rm -rf "$scriptdir/build.rasplex-RPi.arm-$OPENELEC_VERSION/.stamps/plexht"
+        rm -rf "$scriptdir/build.rasplex-$project.$arch-$OPENELEC_VERSION/.stamps/plexht"
     fi
 
-    [ ! -e $scriptdir/plex-home-theater/ ] && git clone https://github.com/RasPlex/plex-home-theatre.git $scriptdir/plex-home-theater/
+    [ ! -e $scriptdir/plex-home-theater/ ] && git clone ~/Documents/src/plex-home-theater-public $scriptdir/plex-home-theater/
     git --git-dir=$scriptdir/plex-home-theater/.git  fetch  || echo "Could not fetch remote refs :("
-    git --git-dir=$scriptdir/plex-home-theater/.git checkout RP-$version 
-    git --work-tree=$scriptdir/build.rasplex-RPi.arm-$OPENELEC_VERSION/plexht-RP-$version  --git-dir=$scriptdir/plex-home-theater/.git checkout RP-$version -- .
-    cp $scriptdir/tools/rasplex/sync-repo  $scriptdir/build.rasplex-RPi.arm-$OPENELEC_VERSION/plexht-RP-$version 
+    git --git-dir=$scriptdir/plex-home-theater/.git checkout $project-$version 
+    git --work-tree=$scriptdir/build.rasplex-$project.$arch-$OPENELEC_VERSION/plexht-$project-$version  --git-dir=$scriptdir/plex-home-theater/.git checkout $project-$version -- .
+    cp $scriptdir/tools/rasplex/sync-repo  $scriptdir/build.rasplex-$project.$arch-$OPENELEC_VERSION/plexht-$project-$version 
 
-    time DEVTOOLS="$devtools" PROJECT=ION ARCH=x86_64 make release -j `nproc` || exit 2
+    time DEVTOOLS="$devtools" PROJECT=$project ARCH=$arch make release -j `nproc` || exit 2
 }
 
 # create image file
