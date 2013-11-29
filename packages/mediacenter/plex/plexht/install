@@ -48,7 +48,7 @@ find build/lib -not \( -name CMakeFiles -prune \) \
 for i in `find build/lib/ffmpeg/ffmpeg/lib/ \
     -regextype posix-extended -type f \
     -iregex '.*so.*'` ;  do
-    cp $i $ROOT/$INSTALL/usr/lib/plexhometheater/system/players/dvdplayer/`basename $(echo $i | sed  -r 's:lib([a-zA-Z]+)\\.so\\.([0-9]*).*:\1-\2-arm.so:')`
+    cp $i $ROOT/$INSTALL/usr/lib/plexhometheater/system/players/dvdplayer/`basename $(echo $i | sed  -r 's:lib([a-zA-Z]+)\\.so\\.([0-9]*).*:\1-\2-x86_64-linux.so:')`
 done
 
 
