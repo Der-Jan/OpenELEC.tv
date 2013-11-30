@@ -15,7 +15,7 @@ KEY_0            = KEY_NUMERIC_0        # 0
 
 KEY_AUDIO        = KEY_LANGUAGE         # Audio
 KEY_SUBTITLE     = KEY_SUBTITLE         # Subtitle
-KEY_ANGLE        = KEY_ZOOM             # Angle
+KEY_ANGLE        = KEY_ZOOM             # FIX Angle
 KEY_CLEAR        = KEY_DELETE           # Clear
 KEY_TIME         = KEY_TIME             # Time
 
@@ -26,13 +26,13 @@ KEY_BLUE         = KEY_BLUE             # Blue
 
 KEY_INFO         = KEY_INFO             # Display
 KEY_MENU         = KEY_MENU             # Top Menu
-KEY_CONTEXT_MENU = KEY_EPG              # Pop UP/MENU
+KEY_CONTEXT_MENU = KEY_TITLE            # Pop UP/MENU
 KEY_ESC          = KEY_EXIT             # Return
 
 KEY_BACK         = KEY_EXIT             # Back
 KEY_OPTION       = KEY_OPTION           # Options
 KEY_SCREEN       = KEY_SCREEN           # View
-BTN_0            = KEY_EXIT             # X
+BTN_0            = KEY_EXIT             # FIX X
 
 KEY_UP           = KEY_UP               # Direction Up
 KEY_DOWN         = KEY_DOWN             # Direction Down
@@ -44,7 +44,7 @@ BTN_TL           = KEY_VOLUMEUP         # L1 -> Volume Upn
 BTN_TL2          = KEY_VOLUMEDOWN       # L2 -> Volume down
 BTN_THUMBL       = KEY_MUTE             # L3 -> Mute
 
-KEY_HOMEPAGE     = KEY_MEDIA            # PS3 Menu
+KEY_HOMEPAGE     = KEY_MEDIA            # FIX PS3 Menu
 KEY_SELECT       = KEY_RECORD           # Select
 BTN_START        = KEY_OK               # Start
 
