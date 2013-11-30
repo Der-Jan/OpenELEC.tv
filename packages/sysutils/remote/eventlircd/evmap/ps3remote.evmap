@@ -15,7 +15,7 @@ KEY_0            = KEY_NUMERIC_0        # 0
 
 KEY_AUDIO        = KEY_LANGUAGE         # Audio
 KEY_SUBTITLE     = KEY_SUBTITLE         # Subtitle
-KEY_ANGLE        = KEY_ZOOM             # FIX Angle
+KEY_ANGLE        = KEY_MUTE             # Angle
 KEY_CLEAR        = KEY_DELETE           # Clear
 KEY_TIME         = KEY_TIME             # Time
 
