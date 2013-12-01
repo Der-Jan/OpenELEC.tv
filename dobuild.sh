@@ -103,7 +103,6 @@ function build {
 
     source $scriptdir/config/version
 
-    rm -rf  $scriptdir/build.rasplex-$project.$arch-$OPENELEC_VERSION/plexht-$project-*
     mkdir -p $scriptdir/build.rasplex-$project.$arch-$OPENELEC_VERSION/plexht-$project-$version
     if [ $force_pht_rebuild -eq 1 ]; then
         rm -r "$scriptdir/build.rasplex-$project.$arch-$OPENELEC_VERSION/.stamps/plexht"
@@ -111,9 +110,8 @@ function build {
 
     [ ! -e $scriptdir/plex-home-theater/ ] && git clone ~/Documents/src/plex-home-theater-public $scriptdir/plex-home-theater/
     git --git-dir=$scriptdir/plex-home-theater/.git  fetch  || echo "Could not fetch remote refs :("
-    git --git-dir=$scriptdir/plex-home-theater/.git checkout $project-$version 
-    git --work-tree=$scriptdir/build.rasplex-$project.$arch-$OPENELEC_VERSION/plexht-$project-$version  --git-dir=$scriptdir/plex-home-theater/.git checkout $project-$version -- .
-    cp $scriptdir/tools/rasplex/sync-repo  $scriptdir/build.rasplex-$project.$arch-$OPENELEC_VERSION/plexht-$project-$version 
+    git --git-dir=$scriptdir/plex-home-theater/.git checkout $project-$version || echo "Cannot checkout $project-$version"
+    git --work-tree=$scriptdir/build.rasplex-$project.$arch-$OPENELEC_VERSION/plexht-$project-$version  --git-dir=$scriptdir/plex-home-theater/.git checkout $project-$version -- . || echo "Cannot checkout to work-tree"
 
     time DEVTOOLS="$devtools" PROJECT=$project ARCH=$arch make release -j `nproc` || exit 2
 }
