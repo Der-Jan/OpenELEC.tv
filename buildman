@@ -76,7 +76,7 @@ def  build(config):
         os.system("rm -r {}/build.rasplex-{}.{}-{}/.stamps/plexht".format(SCRIPTDIR,config.project,config.arch,config.oeversion))
 
     if not os.path.isdir(os.path.join(SCRIPTDIR,"plex-home-theater")):
-        os.system("git clone https://github.com/RasPlex/plex-home-theatre.git {}/plex-home-theater/".format(SCRIPTDIR))
+        os.system("git clone ~/Documents/src/plex-home-theatre-public {}/plex-home-theater/".format(SCRIPTDIR))
 
     
     if config.version == "wip":
