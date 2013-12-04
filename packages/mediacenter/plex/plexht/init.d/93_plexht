@@ -144,6 +144,9 @@ fi
       64)
         safe_shutdown poweroff
         ;;
+      65)
+# EXITCODE_RESTARTAPP        
+        ;;
       66)
         safe_shutdown reboot
         ;;
@@ -153,6 +156,7 @@ fi
         ;;
       *)
         echo "Abnormal Exit. Exited with code $RET"
+        safe_shutdown poweroff
         ;;
     esac
 
