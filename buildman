@@ -1,0 +1,284 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import time
+import traceback
+import argparse
+from argparse import RawTextHelpFormatter
+
+SCRIPTDIR=os.path.dirname(os.path.abspath(__file__))
+
+
+#read default settings
+#settingsfile=~/.rasplex
+#[ -f "$settingsfile" ] && source "$settingsfile"
+
+class Config:
+
+    def __init__(self,args):
+
+        if args.tag is not None:
+            self.version = args.tag
+        elif args.branch is not None:
+            self.version = args.branch
+        elif args.sha is not None:
+            self.version = args.sha
+        elif args.wip is not None:
+            self.version = "wip"
+
+        self.force = args.force
+    	self.rebuild = args.rebuild
+    	self.image  = args.image
+
+        self.distroname = "rasplex"
+        self.devtools = False
+        self.project = "ION"
+        self.arch = "x86_64"
+        self.outfilename="{}-{}.{}-{}".format(self.distroname,self.project,self.arch,self.version)
+        self.tmpdir = "{}/tmp".format(SCRIPTDIR)
+        self.outimagename = "{}-{}.img".format(self.distroname,self.version)
+        self.outimagefile = "{}/{}".format(self.tmpdir,self.outimagename)
+        self.targetdir = "{}/target".format(SCRIPTDIR)
+
+        oeversion = open(os.path.join(SCRIPTDIR,"config/version"))
+
+        for line in oeversion:
+            if line.find("OPENELEC_VERSION") >=0:
+                self.oeversion = line.split("OPENELEC_VERSION=")[1].strip().replace("\"","")
+
+        oeversion.close()
+
+        rpversion = open(os.path.join(SCRIPTDIR,"config/rasplex"),"w")
+        rpversion.write(""" 
+        RASPLEX_VERSION=\"{}\"
+        DISTRONAME=\"{}\"
+        """.format(self.version,self.distroname) )
+        rpversion.close()
+
+
+    def __str__(self):
+        strrep =""
+        for each in self.__dict__:
+            strrep += each + " => "+str(self.__dict__[each]) + "\n"
+	return strrep
+
+# build
+def  build(config):
+    print "Building rasplex"
+
+
+#    os.system("rm -rf  {}/build.rasplex-RPi.arm-{}/plexht*".format(SCRIPTDIR,
+#                                                                config.oeversion))
+    
+
+    if (config.force):
+        os.system("rm -r {}/build.rasplex-{}.{}-{}/.stamps/plexht".format(SCRIPTDIR,config.project,config.arch,config.oeversion))
+
+    if not os.path.isdir(os.path.join(SCRIPTDIR,"plex-home-theater")):
+        os.system("git clone https://github.com/RasPlex/plex-home-theatre.git {}/plex-home-theater/".format(SCRIPTDIR))
+
+    
+    if config.version == "wip":
+        os.system("ln -sf {}/plex-home-theater {}/build.rasplex-{}.{}-{}/plexht-{}".format(SCRIPTDIR,SCRIPTDIR,config.project,config.arch,config.oeversion,config.version))
+
+    else:
+        os.system("mkdir -p {}/build.rasplex-{}.{}-{}/plexht-{}".format(SCRIPTDIR,config.project,config.arch, config.oeversion, config.version))
+        os.system("git --git-dir={}/plex-home-theater/.git  fetch".format(SCRIPTDIR))
+        #os.system("git --git-dir={}/plex-home-theater/.git checkout {}".format(SCRIPTDIR,config.version)) 
+        os.system("git --work-tree={}/build.rasplex-{}.{}-{}/plexht-{}  --git-dir={}/plex-home-theater/.git checkout {} -- .".format(
+                                                                            SCRIPTDIR,config.project,config.arch,config.oeversion,config.version,SCRIPTDIR,config.version))
+        os.system("cp {}/tools/rasplex/sync-repo  {}/build.rasplex-{}.{}-{}/plexht-{}".format(SCRIPTDIR,SCRIPTDIR,config.project,config.arch,config.oeversion,config.version)) 
+    os.system("PROJECT=ION ARCH=x86_64 make release -j `nproc` || exit 2")
+
+def create_image(config):
+    print "Creating SD image"
+
+
+    target = os.path.join(config.targetdir, config.outfilename)
+
+    os.system("mkdir -p {}".format(config.tmpdir))
+    os.system("rm -rf {}/*".format(config.tmpdir))
+    os.system("cp {}.tar {}".format(target, config.tmpdir))
+    
+    print "  Extracting release tarball..."
+    os.system("tar -xpf {}.tar -C {} ".format(target, config.tmpdir)) 
+    
+    print "  Setup loopback device..."
+    freedev = os.popen("sudo losetup -f").read().strip()
+    print freedev
+
+    if freedev != "/dev/loop0":
+        os.system("sudo umount /dev/loop0")
+        os.system("sudo losetup -d /dev/loop0")
+
+    
+    print "  Prepare image file..."
+    os.system("dd if=/dev/zero of={} bs=1M count=1500".format(config.outimagefile))
+    
+    print "  Write data to image..."
+    os.chdir("{}/{}".format(config.tmpdir,config.outfilename))
+    os.system("./create_sdcard /dev/loop0 {}".format(config.outimagefile)) 
+    
+    print "Created SD image at {}".format(config.outimagefile)
+
+
+def update():
+  
+    
+    if not binaryQuestion("Are you sure you want to update? This will stash any uncommitted changes. They can be restored with 'git stash apply'"):
+        print "Update aborted by user"
+        exit(0)
+    
+    output = ""
+
+    print "Stashing changes"
+    try:
+   
+        sys.stdout.write( "Updating openelec...")
+        output += os.popen("git stash").read()
+        output += os.popen("git checkout rasplex-dev").read()
+        output += os.popen("git pull --rebase origin rasplex-dev").read()
+        print "done. OpenELEC is now at:"
+        print os.popen("git --no-pager log --pretty=o -n 1").read()
+
+        sys.stdout.write("Updating plex-home-theater...") 
+        os.chdir("{}/plex-home-theater".format(SCRIPTDIR))
+        output+= os.popen("git stash").read()
+        output+= os.popen("git checkout rasplex-dev").read()
+        output+= os.popen("git pull --rebase origin rasplex-dev").read()
+        print "done. PlexHT is now at:"
+        print os.popen("git --no-pager log --pretty=o -n 1").read()
+    except:
+        err = traceback.format_exc()
+        print err
+
+        print "OH FUCK! Something went wrong! Blame Dale (be nice)"
+        print output
+        print "Check your stash, any unsaved work should still be there"
+        raise Exception
+
+    print "Any uncommited changes you had are now stashed."
+    print "\tPlease run git stash apply to get your changes back (you may need to merge!)"
+    print "Google git stash apply to figure out how to get them back"
+    print "Update complete, please re-run buildman to do a build"
+
+
+def binaryQuestion(question, default="yes"):
+    
+    valid = {"yes":True,   "y":True,  "ye":True, "no":False,     "n":False}
+    
+    if default == None:
+        prompt = " [y/n] "
+    
+    elif default == "yes":
+        prompt = " [Y/n] "
+    
+    elif default == "no":
+        prompt = " [y/N] "
+    
+    else:
+        raise ValueError("invalid default answer: '%s'" % default)
+
+    while True:
+        sys.stdout.write(question + prompt)
+        choice = raw_input().lower()
+    
+        if default is not None and choice == '':
+            return valid[default]
+        
+        elif choice in valid:
+            return valid[choice]
+        
+        else:
+            sys.stdout.write("Please respond with 'yes' or 'no' "\
+                             "(or 'y' or 'n').\n")
+
+
+
+#def upload_sourceforge():
+#    projectdir="/home/frs/project/rasplex"
+#    projectdlbase="http://sourceforge.net/projects/rasplex/files"
+#    [ -z "$user" ] && user=`whoami`
+#    
+#    print "Distributing build"
+#    
+#    cd "$tmpdir"
+#
+#    print "  compressing image..."
+#    gzip "$outimagefile"
+#    
+#    print "  uploading autoupdate package"
+#    time scp "$outfilename".tar "$user@frs.sourceforge.net:$projectdir/autoupdate/$distroname/"
+#     
+#    print "  uploading install image"
+#    if [ $devbuild -eq 1 ];then
+#        releasedir="development"
+#    else
+#        releasedir="release"
+#    fi
+#    time scp "$outimagefile.gz" "$user@frs.sourceforge.net:$projectdir/$releasedir/"    
+#
+# main
+
+def main(args):
+
+    if args.update:
+        update()
+        exit()
+
+
+    config = Config(args)
+    print config
+
+    if config.rebuild:
+        build(config)
+
+    if config.image:
+        create_image(config)
+
+
+       #if [ $devbuild -eq 1 ];then
+    #    distroname="rasplexdev"
+    #    devtools="yes"
+    #    print "This is a development build!"
+    #fi
+# set rasplex config
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='A script for managing stack states', formatter_class=RawTextHelpFormatter, epilog="""
+To update to latest rasplex-dev branches:\n
+\t./buildman -u\n
+To link plex-home-theater to build.rasplex-XXX/plexht-wip and run a build\n
+\t./buildman -w -r -f\n
+To build against the tag RP-X.X.X:\n
+\t./buildman -t RP-X.X.X -r -f\n
+To generate an image from completed build tagged RP-X.X.X:\n
+\t./buildman -t RP-X.X.X -i\n
+""")
+    reftype = parser.add_mutually_exclusive_group(required=True)
+    reftype.add_argument('-t', '--tag', help="Build against specified tag")
+    reftype.add_argument('-b', '--branch', help="Build against specified branch")
+    reftype.add_argument('-s', '--sha', help="Build against specified sha")
+    reftype.add_argument('-w', '--wip', action="store_true", help="Build against current working tree state")
+    reftype.add_argument('-u', '--update', action="store_true", help="Update to the latest dev code")
+    parser.add_argument('-i', '--image', action="store_true", help="Generate .img file from succesful build.")
+    parser.add_argument('-r', '--rebuild', action="store_true", help="Run a build")
+    parser.add_argument('-f', '--force', action="store_true", help="force a rebuild of plexht")
+
+    args = parser.parse_args()
+
+
+    try:
+        start = time.time()
+        main(args)
+
+    except SystemExit:
+        pass
+    except:
+        err = traceback.format_exc()
+        print err
+    finally:
+        end = time.time()
+ 
+    print "Request processed in {:04,.2f}s".format(end-start)

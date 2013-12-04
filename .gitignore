@@ -29,4 +29,5 @@ mkpkg-temp
 # original OpenELEC version file
 # (will be generated on build)
 /config/version
+/plex-home-theater
 
