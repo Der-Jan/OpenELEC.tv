@@ -98,9 +98,9 @@ if [ "$RUNLEVEL" = openelec ]; then
   # starting Xorg
   ##############################################################################
 
-  logger -t Xorg "### starting Xorg with '$DISPLAY vt01 $XORG_ARGS' ###"
+  logger -t Xorg "### starting Xorg with '$DISPLAY vt02 $XORG_ARGS' ###"
 
-  Xorg $DISPLAY vt01 $XORG_ARGS > /dev/null 2>&1 &
+  Xorg $DISPLAY vt02 $XORG_ARGS > /dev/null 2>&1 &
 
 fi
 
