@@ -23,30 +23,34 @@
 #
 # runlevels: openelec, textmode
 
-. /etc/swap.conf
+if [ $(cat /proc/meminfo | grep MemTotal | awk '{print $2}') -lt 300000 ]; then
+    progress "256 MB or low memory Pi detected, activating Swap"
+    . /etc/swap.conf
 
-if [ -f $HOME/.config/swap.conf ]; then
-  . $HOME/.config/swap.conf
-fi
-
-(
-  if [ -e /proc/swaps ]; then
-    SWAP=`blkid -t TYPE="swap" -o device`
-
-    if [ -z "$SWAP" -a ! -f "$SWAPFILE" ]; then
-      progress "creating swapfile"
-      echo "creating Swapfile ..."
-      mkdir -p `dirname $SWAPFILE`
-      dd if=/dev/zero of=$SWAPFILE bs=1M count=$SWAPFILESIZE 2>&1 > /dev/null
-      chmod 0600 $SWAPFILE 2>&1 > /dev/null
-      mkswap $SWAPFILE 2>&1 > /dev/null
+    if [ -f $HOME/.config/swap.conf ]; then
+      . $HOME/.config/swap.conf
     fi
 
-    progress "enable swap"
-      [ -z "$SWAP" -a -f "$SWAPFILE" ] && SWAP=$SWAPFILE
-      for i in $SWAP; do
-        swapon -p 10000 $SWAP 2>&1 > /dev/null
-      done
-      sysctl -w vm.swappiness=10 2>&1 > /dev/null
-  fi
-)&
+    (
+      if [ -e /proc/swaps ]; then
+        SWAP=`blkid -t TYPE="swap" -o device`
+
+        if [ -z "$SWAP" -a ! -f "$SWAPFILE" ]; then
+          progress "creating swapfile"
+          echo "creating Swapfile ... please be patient"
+          mkdir -p `dirname $SWAPFILE`
+          dd if=/dev/zero of=$SWAPFILE bs=1M count=$SWAPFILESIZE 2>&1 > /dev/null
+          chmod 0600 $SWAPFILE 2>&1 > /dev/null
+          mkswap $SWAPFILE 2>&1 > /dev/null
+        fi
+
+        progress "enable swap"
+          [ -z "$SWAP" -a -f "$SWAPFILE" ] && SWAP=$SWAPFILE
+          for i in $SWAP; do
+            swapon -p 10000 $SWAP 2>&1 > /dev/null
+          done
+          sysctl -w vm.swappiness=10 2>&1 > /dev/null
+      fi
+    )&
+
+fi

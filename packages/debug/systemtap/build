@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 #      This file is part of OpenELEC - http://www.openelec.tv
 #      Copyright (C) 2009-2012 Stephan Raue (stephan@openelec.tv)
@@ -18,20 +19,22 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="debug"
-PKG_VERSION=""
-PKG_REV="1"
-PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.openelec.tv"
-PKG_URL=""
-PKG_DEPENDS="gdb strace"
-PKG_BUILD_DEPENDS="toolchain"
-PKG_PRIORITY="required"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="debug: Metapackage for installing debugging tools"
-PKG_LONGDESC="debug is a Metapackage for installing debugging tools"
+. config/options $1
 
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
+IMAGE_TARGET=$ROOT/$BUILD/image/system
 
+
+cd $ROOT/$BUILD/$PKG_NAME-$PKG_VERSION
+
+
+autoconf
+./configure --disable-translator \
+            --disable-ssp \
+            --host=$TARGET_NAME \
+            --target=$TARGET_NAME \
+            --prefix=$IMAGE_TARGET/usr \
+            --exec-prefix=$IMAGE_TARGET/usr
+
+mkdir -p $IMAGE_TARGET/usr/bin/staprun
+
+make

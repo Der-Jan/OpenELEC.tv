@@ -46,8 +46,6 @@
   SSHD="/usr/sbin/sshd"
 
   (
-    if [ "$SSH" = "yes" -o "$SSHD_START" = "true" ]; then
-
     # Check for the SSH1 RSA key
       if [ ! -s $RSA1_KEY ] ; then
         progress "SSH: generating SSH1 RSA key"
@@ -72,5 +70,4 @@
       progress "Starting SSH Server"
         rm /var/run/sshd.pid &>/dev/null
         eval $SSHD $OPTIONS
-    fi
   )&

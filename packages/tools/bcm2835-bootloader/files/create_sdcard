@@ -198,7 +198,12 @@ echo "#########################################################"
 # create a single partition
   echo "creating partitions on $DISK..."
   parted -s "$DISK" unit cyl mkpart primary fat32 -- 0 32
-  parted -s "$DISK" unit cyl mkpart primary ext2 -- 32 -2
+  parted -s "$DISK" unit cyl mkpart primary ext2 -- 32 -1
+
+  p1start=$(parted -s "$DISK" -m unit b p | grep "^1" | cut -f 2 -d: | sed s:B::)
+  p1end=$(parted -s "$DISK" -m unit b p | grep "^2" | cut -f 2 -d: | sed s:B::)
+  
+  echo "P1 is from $p1start to $p1end"
 
 # make partition active (bootable)
   echo "marking partition active..."
@@ -219,7 +224,7 @@ echo "#########################################################"
   if [ "$DISK" = "/dev/loop0" ]; then
     sync
     losetup -d $DISK
-    losetup $DISK $IMGFILE -o 1048576 --sizelimit 131071488
+    losetup $DISK $IMGFILE -o $p1start --sizelimit $p1end
     PART1=$DISK
   fi
 

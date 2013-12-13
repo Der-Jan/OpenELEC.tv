@@ -1,0 +1,10 @@
+#!/bin/bash
+
+. config/options $1
+
+IMAGE_TARGET=$ROOT/$BUILD/image/system
+
+cd $ROOT/$BUILD/$PKG_NAME-$PKG_VERSION
+
+mkdir -p $IMAGE_TARGET/usr/bin/staprun
+make install

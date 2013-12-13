@@ -24,6 +24,8 @@
 
 PYTHON_LIBDIR="`ls -d $INSTALL/usr/lib/python*`"
 
+PKG_BUILD=$ROOT/$BUILD/$PKG_NAME-$RASPLEX_REF
+
 mkdir -p $INSTALL/usr/bin
   cp $PKG_DIR/scripts/cputemp $INSTALL/usr/bin
   cp $PKG_DIR/scripts/gputemp $INSTALL/usr/bin
@@ -99,7 +101,9 @@ cp $PKG_DIR/config/guisettings.xml $INSTALL/usr/share/xbmc/system/
 cp $PKG_DIR/config/guisettings.xml $INSTALL/usr/share/xbmc/
 cp $PKG_DIR/bin/pastebin $INSTALL/usr/bin
 cp $PKG_DIR/bin/pastelog $INSTALL/usr/bin
+cp $PKG_DIR/bin/plexht $INSTALL/usr/bin
 chmod +x $INSTALL/usr/bin/paste*
+chmod +x $INSTALL/usr/bin/plexht
 
 #if [ "$XBMC_EXTRA_FONTS" = yes ]; then
 #  mkdir -p $INSTALL/usr/share/xbmc/media/Fonts

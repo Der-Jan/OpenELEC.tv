@@ -27,6 +27,7 @@ class Config:
         elif args.wip is not None:
             self.version = "wip"
 
+
         self.force = args.force
     	self.rebuild = args.rebuild
     	self.image  = args.image
@@ -35,25 +36,44 @@ class Config:
         self.devtools = False
         self.project = "ION"
         self.arch = "x86_64"
-        self.outfilename="{}-{}.{}-{}".format(self.distroname,self.project,self.arch,self.version)
         self.tmpdir = "{}/tmp".format(SCRIPTDIR)
         self.outimagename = "{}-{}.img".format(self.distroname,self.version)
         self.outimagefile = "{}/{}".format(self.tmpdir,self.outimagename)
         self.targetdir = "{}/target".format(SCRIPTDIR)
+        self.rpversion = self.version.replace("ION-","")
+        self.outfilename="{}-{}.{}-{}".format(self.distroname,self.project,self.arch,self.rpversion)
 
-        oeversion = open(os.path.join(SCRIPTDIR,"config/version"))
+        
+        configstr=""" 
+        RASPLEX_VERSION=\"{}\" # a numeric version is needed here if possible
+        RASPLEX_REF=\"{}\" # we want to preserve the exact ref that they gave us
+        DISTRONAME=\"{}\"
+        """.format(self.rpversion,self.version,self.distroname)
 
-        for line in oeversion:
-            if line.find("OPENELEC_VERSION") >=0:
-                self.oeversion = line.split("OPENELEC_VERSION=")[1].strip().replace("\"","")
 
-        oeversion.close()
+
+        if (args.debug):
+            configstr+="\nRASPLEX_BUILDTYPE=\"debug\""
+            configstr+="\nOPENELEC_VERSION=\"devel\""
+            self.buildtype_str="DEVTOOLS=\"yes\""
+            self.oeversion="devel"
+
+        else:
+            configstr+="\nRASPLEX_BUILDTYPE=\"release\""
+            self.buildtype_str="DEVTOOLS=\"yes\""
+
+            oeversion = open(os.path.join(SCRIPTDIR,"config/version"))
+
+            for line in oeversion:
+                if line.find("OPENELEC_VERSION") >=0:
+                    self.oeversion = line.split("OPENELEC_VERSION=")[1].strip().replace("\"","")
+
+            oeversion.close()
 
         rpversion = open(os.path.join(SCRIPTDIR,"config/rasplex"),"w")
-        rpversion.write(""" 
-        RASPLEX_VERSION=\"{}\"
-        DISTRONAME=\"{}\"
-        """.format(self.version,self.distroname) )
+
+
+        rpversion.write(configstr)
         rpversion.close()
 
 
@@ -83,13 +103,14 @@ def  build(config):
         os.system("ln -sf {}/plex-home-theater {}/build.rasplex-{}.{}-{}/plexht-{}".format(SCRIPTDIR,SCRIPTDIR,config.project,config.arch,config.oeversion,config.version))
 
     else:
+        print "Running build against ref {}".format(config.version)
         os.system("mkdir -p {}/build.rasplex-{}.{}-{}/plexht-{}".format(SCRIPTDIR,config.project,config.arch, config.oeversion, config.version))
         os.system("git --git-dir={}/plex-home-theater/.git  fetch".format(SCRIPTDIR))
         #os.system("git --git-dir={}/plex-home-theater/.git checkout {}".format(SCRIPTDIR,config.version)) 
         os.system("git --work-tree={}/build.rasplex-{}.{}-{}/plexht-{}  --git-dir={}/plex-home-theater/.git checkout {} -- .".format(
                                                                             SCRIPTDIR,config.project,config.arch,config.oeversion,config.version,SCRIPTDIR,config.version))
         os.system("cp {}/tools/rasplex/sync-repo  {}/build.rasplex-{}.{}-{}/plexht-{}".format(SCRIPTDIR,SCRIPTDIR,config.project,config.arch,config.oeversion,config.version)) 
-    os.system("PROJECT=ION ARCH=x86_64 make release -j `nproc` || exit 2")
+    return os.system("{} PROJECT={} ARCH={} make release -j `nproc` || exit 2".format(config.buildtype_str,config.project,config.arch))
 
 def create_image(config):
     print "Creating SD image"
@@ -114,7 +135,7 @@ def create_image(config):
 
     
     print "  Prepare image file..."
-    os.system("dd if=/dev/zero of={} bs=1M count=1500".format(config.outimagefile))
+    os.system("dd if=/dev/zero of={} bs=1M count=910".format(config.outimagefile))
     
     print "  Write data to image..."
     os.chdir("{}/{}".format(config.tmpdir,config.outfilename))
@@ -232,7 +253,10 @@ def main(args):
     print config
 
     if config.rebuild:
-        build(config)
+        rc = build(config)
+
+        if rc != 0:
+            exit(rc)
 
     if config.image:
         create_image(config)
@@ -265,6 +289,7 @@ To generate an image from completed build tagged RP-X.X.X:\n
     parser.add_argument('-i', '--image', action="store_true", help="Generate .img file from succesful build.")
     parser.add_argument('-r', '--rebuild', action="store_true", help="Run a build")
     parser.add_argument('-f', '--force', action="store_true", help="force a rebuild of plexht")
+    parser.add_argument('-d', '--debug', action="store_true", help="Build with debug tools")
 
     args = parser.parse_args()
 

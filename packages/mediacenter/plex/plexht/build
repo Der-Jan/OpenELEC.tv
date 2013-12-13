@@ -23,19 +23,18 @@
 
 . config/options $1
 
-cd $PKG_BUILD
+cd $ROOT/$BUILD/$PKG_NAME-$RASPLEX_REF
 SRC_DIR=`pwd`
 
 [ ! -d build ] && mkdir build 
 cd build 
 [ -f Makefile ] && rm -rf *
 
-# PlexHT will crash on start without debug set. See card #176
-#if [ "$DEBUG" = yes ]; then
+if [ $RASPLEX_BUILDTYPE == "debug" ];then
       CMAKE_BUILD_TYPE="Debug"
-#else
-#      CMAKE_BUILD_TYPE="Release"
-#fi
+else
+      CMAKE_BUILD_TYPE="Release"
+fi
 
 
 MAKEFLAGS=-j1

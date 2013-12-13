@@ -36,8 +36,10 @@ BUILD_DATE=`date +%Y%m%d%H%M%S`
 if [ "$OPENELEC_VERSION" = devel -o "$OPENELEC_VERSION" = debug ]; then
   GIT_BUILD=$(git rev-list --count HEAD)
   GIT_HASH=$(git rev-parse HEAD)
+  PLEX_HASH=$(git --git-dir=$ROOT/plex-home-theater/.git rev-parse HEAD)
   OPENELEC_VERSION=$OPENELEC_VERSION-$BUILD_DATE-r$GIT_BUILD
 fi
+
 
 TARGET_VERSION="$PROJECT.$TARGET_ARCH-$RASPLEX_VERSION"
 IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
@@ -83,6 +85,9 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   echo "$DISTRONAME - Version: $RASPLEX_VERSION" > $INSTALL/etc/openelec-release
   if [ -n "$GIT_HASH" ]; then
     echo "$GIT_HASH" >> $INSTALL/etc/gitrev
+  fi
+  if [ -n "$PLEX_HASH" ]; then
+    echo "$PLEX_HASH" >> $INSTALL/etc/plexrev
   fi
 
   if [ "$OFFICIAL" = "yes" ]; then

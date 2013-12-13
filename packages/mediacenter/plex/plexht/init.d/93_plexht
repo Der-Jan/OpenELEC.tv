@@ -133,8 +133,14 @@ fi
     else
       XBMC_HOME_PATH="$XBMC_HOME_PATH_BUILTIN"
     fi
-    
-    XBMC_HOME="$XBMC_HOME_PATH" "$XBMC_BIN" $XBMC_ARGS > /dev/null 2>&1
+    cd /storage
+    XBMC_HOME="$XBMC_HOME_PATH" 
+
+    export XBMC_HOME
+    export XBMC_BIN
+    export XBMC_ARGS 
+    /usr/bin/plexht > /dev/null 2>&1
+
     RET=$?
 
     case "$RET" in
