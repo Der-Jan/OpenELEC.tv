@@ -110,6 +110,7 @@ def  build(config):
         os.system("git --work-tree={}/build.rasplex-{}.{}-{}/plexht-{}  --git-dir={}/plex-home-theater/.git checkout {} -- .".format(
                                                                             SCRIPTDIR,config.project,config.arch,config.oeversion,config.version,SCRIPTDIR,config.version))
         os.system("cp {}/tools/rasplex/sync-repo  {}/build.rasplex-{}.{}-{}/plexht-{}".format(SCRIPTDIR,SCRIPTDIR,config.project,config.arch,config.oeversion,config.version)) 
+
     return os.system("{} PROJECT={} ARCH={} make release -j `nproc` || exit 2".format(config.buildtype_str,config.project,config.arch))
 
 def create_image(config):

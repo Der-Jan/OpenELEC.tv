@@ -22,6 +22,7 @@
 
 . config/options $1
 
+echo "Building elfutils" 
 strip_lto
 
 CFLAGS="$CFLAGS -fPIC -DPIC"
@@ -44,8 +45,23 @@ make V=1 -C libdw libdw.a
 make DESTDIR="$SYSROOT_PREFIX" -C libelf install-includeHEADERS install-pkgincludeHEADERS
 make DESTDIR="$SYSROOT_PREFIX" -C libdw install-includeHEADERS install-pkgincludeHEADERS
 
+
+#required by systemtap 
+
 mkdir -p $SYSROOT_PREFIX/usr/lib
   cp libelf/libelf.a $SYSROOT_PREFIX/usr/lib
   cp libdw/libdw.a $SYSROOT_PREFIX/usr/lib
 
-  
+make clean
+
+./configure --host=$TARGET_NAME \
+            --build=$HOST_NAME \
+            --prefix=$ROOT/$BUILD/image/system/usr \
+            --disable-werror \
+            --disable-progs \
+            --with-zlib \
+            --without-bzlib \
+            --without-lzma \
+
+make
+make install
