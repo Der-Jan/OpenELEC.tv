@@ -38,7 +38,6 @@ fi
 
 
 MAKEFLAGS=-j1
-strip_lto
 LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`
 cwd=`pwd`
 TOOLCHAIN_DIR="$(cd `dirname ../../toolchain` && pwd)/toolchain"
@@ -64,4 +63,4 @@ cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
       $SRC_DIR
 
 pwd
-make VERBOSE=1
+make VERBOSE=1 -j`nproc`

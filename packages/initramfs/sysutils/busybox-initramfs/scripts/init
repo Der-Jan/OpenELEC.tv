@@ -92,6 +92,9 @@
       nosplash)
         SPLASH=no
         ;;
+      growstorage)
+        GROW_STORAGE=yes
+        ;;
       noram)
         SYSTEM_TORAM=no
         ;;
@@ -396,6 +399,37 @@
     mount_part "$boot" "/flash" "ro,noatime"
   }
 
+
+  grow_storage() {
+
+      if [ "$GROW_STORAGE" = "yes" ]; then 
+          DEVICE=${disk%p*} # chop off p2 or partition info
+          STORAGE_DEV=$disk
+
+           
+
+          if [ ! -e /storage/.grewroot ];then
+
+              progress "Growing root to available space"
+              SYSROOT_LIBS=/sysroot/usr/lib:/sysroot/lib
+              umount /storage
+              mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
+              PART_START=`LD_LIBRARY_PATH=$SYSROOT_LIBS /sysroot/usr/bin/parted $DEVICE -ms unit s p | grep "^2" | awk '{split($0,a,":"); print a[2]}'`
+              LD_LIBRARY_PATH=$SYSROOT_LIBS /sysroot/usr/bin/parted -s $DEVICE rm 2
+              LD_LIBRARY_PATH=$SYSROOT_LIBS /sysroot/usr/bin/parted -s $DEVICE unit s mkpart primary ext2 -- $PART_START -1
+
+
+              progress "Resizing storage partition"
+              LD_LIBRARY_PATH=$SYSROOT_LIBS /sysroot/sbin/resize2fs $STORAGE_DEV
+              mount_part "$disk" "/storage" "rw,noatime"
+              echo '1' >  /storage/.grewroot
+              umount /sysroot
+              sync
+          fi
+      fi
+  }
+
+
   mount_storage() {
     progress "Mounting storage"
 
@@ -467,8 +501,11 @@
       fi
 
       mount_part "$disk" "/storage" "rw,noatime"
+      grow_storage 
+      
     fi
   }
+
 
   check_update() {
     progress "Checking for updates"
@@ -573,6 +610,7 @@
 
     [ -f "/sysroot/sbin/init" ] || error "final_check" "Could not find system."
   }
+
 
   if [ "${boot%%=*}" = "FILE" ]; then
     error "check arguments" "boot argument can't be FILE type..."

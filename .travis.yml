@@ -1,0 +1,19 @@
+# We should use something like:
+# http://about.travis-ci.org/blog/2012-12-18-travis-artifacts/
+branches:
+  only:
+   - rasplex-dev # for now
+
+before_script:
+ - sudo apt-get update -q
+ - sudo apt-get install -q bash bc gcc g++ sed patch tar bzip2 gzip perl coreutils gawk texinfo gperf cvs zip unzip xutils diff xsltproc default-jre parted libxml-parser-perl 
+
+script: "./buildman -cwrfi &>/dev/null"
+
+notifications:
+  irc:
+    channels:
+      - "irc.srvthe.net#plex"
+    on_success: always # default: always
+    on_failure: change # default: always
+    use_notice: true

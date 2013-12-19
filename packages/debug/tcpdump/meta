@@ -18,19 +18,22 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="debug"
-PKG_VERSION=""
+PKG_NAME="tcpdump"
+PKG_VERSION="4.5.1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
-PKG_SITE="http://www.openelec.tv"
-PKG_URL=""
-PKG_DEPENDS="gdb strace tcpdump"
-PKG_BUILD_DEPENDS="toolchain"
-PKG_PRIORITY="required"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="debug: Metapackage for installing debugging tools"
-PKG_LONGDESC="debug is a Metapackage for installing debugging tools"
+PKG_SITE="http://www.tcpdump.org/"
+PKG_URL="https://github.com/the-tcpdump-group/tcpdump/archive/tcpdump-$PKG_VERSION.tar.gz"
+PKG_DEPENDS="toolchain libpcap"
+PKG_BUILD_DEPENDS="toolchain libpcap"
+PKG_PRIORITY="optional"
+PKG_SECTION="devel"
+PKG_SHORTDESC="Dump and trace packets"
+PKG_LONGDESC="packet dump lib"
+PKG_IS_ADDON="no"
+PKG_AUTORECONF="no"
+
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"

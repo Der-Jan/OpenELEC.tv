@@ -1,0 +1,9 @@
+#!/bin/bash
+
+. config/options $1
+
+IMAGE_TARGET=$ROOT/$BUILD/image/system
+
+cd $ROOT/$BUILD/$PKG_NAME-$PKG_VERSION
+
+make install

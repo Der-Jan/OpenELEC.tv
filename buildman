@@ -27,7 +27,7 @@ class Config:
         elif args.wip is not None:
             self.version = "wip"
 
-
+        self.ci = args.ci
         self.force = args.force
     	self.rebuild = args.rebuild
     	self.image  = args.image
@@ -55,12 +55,14 @@ class Config:
         if (args.debug):
             configstr+="\nRASPLEX_BUILDTYPE=\"debug\""
             configstr+="\nOPENELEC_VERSION=\"devel\""
-            self.buildtype_str="DEVTOOLS=\"yes\""
+            self.buildtype_str="DEVTOOLS=\"yes\" DEBUG=\"yes\""
             self.oeversion="devel"
+            self.buildtype="debug"
 
         else:
             configstr+="\nRASPLEX_BUILDTYPE=\"release\""
             self.buildtype_str="DEVTOOLS=\"yes\""
+            self.buildtype="release"
 
             oeversion = open(os.path.join(SCRIPTDIR,"config/version"))
 
@@ -95,11 +97,14 @@ def  build(config):
     if (config.force):
         os.system("rm -r {}/build.rasplex-{}.{}-{}/.stamps/plexht".format(SCRIPTDIR,config.project,config.arch,config.oeversion))
 
-    if not os.path.isdir(os.path.join(SCRIPTDIR,"plex-home-theater")):
-        os.system("git clone ~/Documents/src/plex-home-theatre-public {}/plex-home-theater/".format(SCRIPTDIR))
+    if not os.path.isdir("{}/plex-home-theater".format(SCRIPTDIR,config.oeversion,config.buildtype)):
+        os.system("git submodule init")
+        os.system("git submodule update")
 
     
     if config.version == "wip":
+        if not os.path.isdir("{}/build.rasplex-{}.{}-{}-{}".format(SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype)):
+            os.mkdir("{}/build.rasplex-{}.{}-{}-{}".format(SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype))
         os.system("ln -sf {}/plex-home-theater {}/build.rasplex-{}.{}-{}/plexht-{}".format(SCRIPTDIR,SCRIPTDIR,config.project,config.arch,config.oeversion,config.version))
 
     else:
@@ -111,8 +116,19 @@ def  build(config):
                                                                             SCRIPTDIR,config.project,config.arch,config.oeversion,config.version,SCRIPTDIR,config.version))
         os.system("cp {}/tools/rasplex/sync-repo  {}/build.rasplex-{}.{}-{}/plexht-{}".format(SCRIPTDIR,SCRIPTDIR,config.project,config.arch,config.oeversion,config.version)) 
 
-    return os.system("{} PROJECT={} ARCH={} make release -j `nproc` || exit 2".format(config.buildtype_str,config.project,config.arch))
+    if config.ci:
+        print "building in CI mode"
+        pipe = os.popen("{} PROJECT={} ARCH={} make release -j `nproc`".format(config.buildtype_str,config.project,config.arch))
+        output = pipe.read()
+        lines = output.split("\n")
+        print lines[-9000:-1]
+        
+        rc = pipe.close()
+    else:
+        rc = os.system("{} PROJECT={} ARCH={} make release -j `nproc` || exit 2".format(config.buildtype_str,config.project,config.arch))
 
+
+    return rc
 def create_image(config):
     print "Creating SD image"
 
@@ -140,9 +156,10 @@ def create_image(config):
     
     print "  Write data to image..."
     os.chdir("{}/{}".format(config.tmpdir,config.outfilename))
-    os.system("./create_sdcard /dev/loop0 {}".format(config.outimagefile)) 
-    
-    print "Created SD image at {}".format(config.outimagefile)
+    rc=os.system("./create_sdcard /dev/loop0 {}".format(config.outimagefile)) 
+    if rc == 0: 
+        print "Created SD image at {}".format(config.outimagefile)
+    return rc
 
 
 def update():
@@ -160,17 +177,13 @@ def update():
         sys.stdout.write( "Updating openelec...")
         output += os.popen("git stash").read()
         output += os.popen("git checkout rasplex-dev").read()
-        output += os.popen("git pull --rebase origin rasplex-dev").read()
+        output += os.popen("git pull origin rasplex-dev").read()
         print "done. OpenELEC is now at:"
         print os.popen("git --no-pager log --pretty=o -n 1").read()
 
         sys.stdout.write("Updating plex-home-theater...") 
-        os.chdir("{}/plex-home-theater".format(SCRIPTDIR))
-        output+= os.popen("git stash").read()
-        output+= os.popen("git checkout rasplex-dev").read()
-        output+= os.popen("git pull --rebase origin rasplex-dev").read()
-        print "done. PlexHT is now at:"
-        print os.popen("git --no-pager log --pretty=o -n 1").read()
+        output+= os.popen("git submodule update --remote").read()
+        output+= os.popen("git submodule status").read()
     except:
         err = traceback.format_exc()
         print err
@@ -260,8 +273,9 @@ def main(args):
             exit(rc)
 
     if config.image:
-        create_image(config)
+        rc = create_image(config)
 
+    exit(rc)
 
        #if [ $devbuild -eq 1 ];then
     #    distroname="rasplexdev"
@@ -291,6 +305,7 @@ To generate an image from completed build tagged RP-X.X.X:\n
     parser.add_argument('-r', '--rebuild', action="store_true", help="Run a build")
     parser.add_argument('-f', '--force', action="store_true", help="force a rebuild of plexht")
     parser.add_argument('-d', '--debug', action="store_true", help="Build with debug tools")
+    parser.add_argument('-c', '--ci', action="store_true", help="Run as CI")
 
     args = parser.parse_args()
 

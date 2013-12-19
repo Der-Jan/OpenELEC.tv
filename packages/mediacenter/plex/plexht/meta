@@ -27,9 +27,9 @@ PKG_SITE="http://www.plexapp.com"
 #PKG_URL="https://github.com/Der-Jan/plex-home-theatre/archive/$PKG_VERSION.zip"
 PKG_URL="https://github.com/RasPlex/RasPlex/archive/master.zip"
 #PKG_DEPENDS="boost Python zlib bzip2 systemd ffmpeg libass curl libssh rtmpdump fontconfig tinyxml freetype libmad libogg libmodplug faad2 flac libmpeg2 taglib yajl sqlite service.openelec.settings xbmc-addon-settings xbmc-addon-rasplex-updater htop"
-PKG_DEPENDS="boost Python zlib bzip2 systemd libass curl libssh rtmpdump fontconfig tinyxml freetype libmad libogg libmodplug faad2 flac libmpeg2 taglib yajl sqlite service.openelec.settings xbmc-addon-settings xbmc-addon-rasplex-updater htop ffmpeg libva"
+PKG_DEPENDS="boost Python zlib bzip2 systemd libass curl libssh rtmpdump fontconfig tinyxml freetype libmad libogg libmodplug faad2 flac libmpeg2 taglib yajl sqlite service.openelec.settings xbmc-addon-settings xbmc-addon-rasplex-updater htop libmicrohttpd ffmpeg libva"
 #PKG_BUILD_DEPENDS="toolchain boost Python zlib bzip2 systemd lzo pcre swig ffmpeg libass enca curl libssh rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libmad libsamplerate libogg libcdio libmodplug faad2 flac libmpeg2 taglib yajl sqlite libshairport"
-PKG_BUILD_DEPENDS="toolchain boost Python zlib bzip2 systemd lzo pcre swig libass enca curl libssh rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libmad libsamplerate libogg libcdio libmodplug faad2 flac libmpeg2 taglib yajl sqlite libshairport libva"
+PKG_BUILD_DEPENDS="toolchain boost Python zlib bzip2 systemd lzo pcre swig  libass enca curl libssh rtmpdump fontconfig fribidi tinyxml libjpeg-turbo libpng tiff freetype jasper libmad libsamplerate libogg libcdio libmodplug faad2 flac libmpeg2 taglib yajl sqlite libshairport libmicrohttpd ffmpeg libva"
 
 #if [ $RASPLEX_BUILDTYPE == "debug" ];then
 #    PKG_DEPENDS="${PKG_DEPENDS} debug"

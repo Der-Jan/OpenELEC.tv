@@ -80,7 +80,7 @@
   esac
 
 # Build optimizations (size/normal/speed)
-  OPTIMIZATIONS="size"
+  OPTIMIZATIONS="speed"
 
 # Project CFLAGS
   PROJECT_CFLAGS=""
@@ -92,10 +92,10 @@
   GOLD_SUPPORT="yes"
 
 # Bootloader to use (syslinux / u-boot / atv-bootloader / bcm2835-bootloader)
-  BOOTLOADER="bcm2835-bootloader"
+  BOOTLOADER="u-boot"
 
 # u-boot version to use (default / aml / cubox)
-  UBOOT_VERSION="default"
+  UBOOT_VERSION="cubox"
 
 # Configuration for u-boot
   UBOOT_CONFIG=""
@@ -118,15 +118,16 @@
   SQUASHFS_COMPRESSION="lzo"
 
 # Mediacenter to use (xbmc / no)
-  MEDIACENTER="plexht"
+  #MEDIACENTER="plexht"
+  MEDIACENTER="no"
 
 # Skins to install (Confluence)
 # Space separated list is supported,
 # e.g. SKINS="Confluence"
-  SKINS="Confluence"
+  #SKINS="Confluence"
 
 # Default Skin (Confluence)
-  SKIN_DEFAULT="Confluence"
+#  SKIN_DEFAULT="Confluence"
 
 # install extra subtitle Fonts for XBMC (yes / no)
   XBMC_EXTRA_FONTS="yes"
@@ -164,7 +165,7 @@
 # for a list of additinoal drivers see packages/linux-drivers
 # Space separated list is supported,
 # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
-  ADDITIONAL_DRIVERS="RTL8192CU RTL8188EU"
+  ADDITIONAL_DRIVERS="RTL8192CU RTL8188EU dvbhdhomerun"
 
 # build with network support (yes / no)
   NETWORK="yes"
@@ -316,7 +317,7 @@
   SENSOR_SUPPORT="yes"
 
 # build with swap support (yes / no)
-  SWAP_SUPPORT="yes"
+  SWAP_SUPPORT="no"
 
 # swapfile size if SWAP_SUPPORT=yes in MB
   SWAPFILESIZE="250"
@@ -343,8 +344,8 @@
   COREBOOT="no"
 
 # Distribution Specific source location
-  DISTRO_MIRROR="http://sources.rasplex.com/mirror"
-  DISTRO_SRC="http://sources.rasplex.com/$OPENELEC_VERSION"
+  DISTRO_MIRROR="http://sources.openelec.tv/mirror"
+  DISTRO_SRC="http://sources.openelec.tv/$OPENELEC_VERSION"
 
 # Addon Server Url
   ADDON_SERVER_URL="http://addons.openelec.tv"
