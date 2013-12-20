@@ -31,12 +31,15 @@ cd build
 [ -f Makefile ] && rm -rf *
 
 if [ $RASPLEX_BUILDTYPE == "debug" ];then
-      CMAKE_BUILD_TYPE="Debug"
+    CMAKE_BUILD_TYPE="Debug"
+    strip_lto # way faster linking
 else
-      CMAKE_BUILD_TYPE="Release"
+    CMAKE_BUILD_TYPE="Release"
 fi
 
-
+if [ $RASPLEX_SPEEDYLINK == "yes" ];then
+    strip_lto # way faster linking
+fi
 MAKEFLAGS=-j1
 LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`
 cwd=`pwd`

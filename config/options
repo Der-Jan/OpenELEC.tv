@@ -64,7 +64,7 @@ PROJECT_DIR="$ROOT/projects"
   FORCE_INSTALL="no"
 
 # install devtools on development builds
-  if [ "$OPENELEC_VERSION" = "devel" ]; then
+  if [ "$DEBUG" = "yes" ]; then
     DEVTOOLS=yes
   fi
 
