@@ -52,6 +52,7 @@ class Config:
 
         if args.linkfast:
             configstr+="RASPLEX_SPEEDYLINK=\"yes\""
+        self.linkfast=args.linkfast
 
         if (args.debug):
             configstr+="\nRASPLEX_BUILDTYPE=\"debug\""
