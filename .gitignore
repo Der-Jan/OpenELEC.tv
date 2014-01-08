@@ -30,3 +30,6 @@ mkpkg-temp
 # (will be generated on build)
 /config/version
 /config/rasplex
+
+# Image output folder
+/tmp

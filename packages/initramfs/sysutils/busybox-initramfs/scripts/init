@@ -414,9 +414,9 @@
               SYSROOT_LIBS=/sysroot/usr/lib:/sysroot/lib
               umount /storage
               mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
-              PART_START=`LD_LIBRARY_PATH=$SYSROOT_LIBS /sysroot/usr/bin/parted $DEVICE -ms unit s p | grep "^2" | awk '{split($0,a,":"); print a[2]}'`
-              LD_LIBRARY_PATH=$SYSROOT_LIBS /sysroot/usr/bin/parted -s $DEVICE rm 2
-              LD_LIBRARY_PATH=$SYSROOT_LIBS /sysroot/usr/bin/parted -s $DEVICE unit s mkpart primary ext2 -- $PART_START -1
+              PART_START=`LD_LIBRARY_PATH=$SYSROOT_LIBS /sysroot/usr/sbin/parted $DEVICE -ms unit s p | grep "^2" | awk '{split($0,a,":"); print a[2]}'`
+              LD_LIBRARY_PATH=$SYSROOT_LIBS /sysroot/usr/sbin/parted -s $DEVICE rm 2
+              LD_LIBRARY_PATH=$SYSROOT_LIBS /sysroot/usr/sbin/parted -s $DEVICE unit s mkpart primary ext2 -- $PART_START -1
 
 
               progress "Resizing storage partition"

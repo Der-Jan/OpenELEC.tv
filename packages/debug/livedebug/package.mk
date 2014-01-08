@@ -18,18 +18,18 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="debug"
+PKG_NAME="livedebug"
 PKG_VERSION=""
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.openelec.tv"
 PKG_URL=""
-PKG_DEPENDS="gdb livedebug"
+PKG_DEPENDS="systemtap strace tcpdump"
 PKG_BUILD_DEPENDS="toolchain"
 PKG_PRIORITY="required"
 PKG_SECTION="virtual"
-PKG_SHORTDESC="debug: Metapackage for installing debugging tools"
+PKG_SHORTDESC="debug: Metapackage for installing debugging tools that can be used at runtime without symbols"
 PKG_LONGDESC="debug is a Metapackage for installing debugging tools"
 
 PKG_IS_ADDON="no"

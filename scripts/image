@@ -117,11 +117,15 @@ IMAGE_NAME="$DISTRONAME-$TARGET_VERSION"
   $SCRIPTS/install util-linux
   $SCRIPTS/install corefonts
 
+
 # Network support
   [ "$NETWORK" = "yes" ] && $SCRIPTS/install network
 
 # Graphic support
   [ ! "$DISPLAYSERVER" = "no" ] && $SCRIPTS/install $DISPLAYSERVER
+
+# Live profiling and debuging tools (not requiring symbols or linker changes)
+  [ "$LIVEDEBUG" = "yes" ] && echo "Live debugging enabled" && $SCRIPTS/install livedebug
 
 # Multimedia support
   [ ! "$MEDIACENTER" = "no" ] && $SCRIPTS/install mediacenter
