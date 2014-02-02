@@ -22,6 +22,7 @@
   <bginfoloadermaxthreads>2</bginfoloadermaxthreads>
   <destroywindowcontrols>false</destroywindowcontrols>
   <useddsfanart>false</useddsfanart>
+  <remotedelay>10</remotedelay>
 </advancedsettings>
 
 <!--https://github.com/OpenELEC/OpenELEC.tv/blob/master/projects/RPi/xbmc/advancedsettings.xml-->
