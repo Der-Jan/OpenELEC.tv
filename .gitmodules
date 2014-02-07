@@ -2,3 +2,6 @@
 	path = plex-home-theater
 	url = https://github.com/RasPlex/plex-home-theatre.git
 	branch = rasplex-dev
+[submodule "service.openelec.settings"]
+	path = service.openelec.settings
+	url = https://github.com/RasPlex/service.openelec.settings.git

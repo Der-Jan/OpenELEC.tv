@@ -26,10 +26,10 @@ FC_CACHE_DIRS="/usr/share/fonts/ /usr/share/xbmc/media/Fonts/"
 
 # TODO: add /storage/.xbmc/media/Fonts to $FC_CACHE_DIRS ?
 
-(
-  progress "Creating fontconfig cache"
-    if [ ! -f /storage/.cache/fontconfig/CACHEDIR.TAG ]; then
-      fc-cache $FC_CACHE_DIRS
-    fi
-)&
-
+#(
+#  progress "Creating fontconfig cache"
+#    if [ ! -f /storage/.cache/fontconfig/CACHEDIR.TAG ]; then
+#      fc-cache $FC_CACHE_DIRS
+#    fi
+#)&
+#
