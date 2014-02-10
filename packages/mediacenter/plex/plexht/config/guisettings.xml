@@ -457,7 +457,7 @@
         <haslcd>false</haslcd>
         <resolution>0</resolution>
         <screenmode>DESKTOP</screenmode>
-        <vsync>3</vsync>
+        <vsync>0</vsync>
     </videoscreen>
     <window>
         <height>720</height>
