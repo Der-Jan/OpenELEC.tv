@@ -122,6 +122,7 @@ fi
     while [ -f "$LOCKDIR/$LOCKFILE" ]; do
       usleep 250000
     done
+
     if [ -f "$PHT_DEBUG_PATH/plexhometheater" ]; then
       XBMC_BIN="$PHT_DEBUG_PATH/plexhometheater"
     else
@@ -132,17 +133,8 @@ fi
     else
       XBMC_HOME_PATH="$XBMC_HOME_PATH_BUILTIN"
     fi
-    cd /storage
-    XBMC_HOME="$XBMC_HOME_PATH" 
-
-    export XBMC_HOME
-    export XBMC_BIN
-    export XBMC_ARGS 
-    ulimit -c unlimited
-    echo -n 1 | /bin/tee /proc/sys/fs/suid_dumpable
-
-    /usr/bin/plexht > /dev/null 2>&1
-
+    
+    XBMC_HOME="$XBMC_HOME_PATH" "$XBMC_BIN" $XBMC_ARGS > /dev/null 2>&1
     RET=$?
 
     case "$RET" in

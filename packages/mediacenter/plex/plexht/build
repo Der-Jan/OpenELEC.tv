@@ -26,9 +26,8 @@
 cd $ROOT/$BUILD/$PKG_NAME-$RASPLEX_REF
 SRC_DIR=`pwd`
 
-[ ! -d build ] && mkdir build 
-cd build 
-[ -f Makefile ] && rm -rf *
+[ ! -d build ] && mkdir build
+[ -d build ] && rm -rf build && mkdir build && cd build
 
 if [ $RASPLEX_BUILDTYPE == "debug" ];then
     CMAKE_BUILD_TYPE="Debug"
@@ -42,12 +41,11 @@ if [ $RASPLEX_SPEEDYLINK == "yes" ];then
 fi
 MAKEFLAGS=-j1
 LDFLAGS=`echo $LDFLAGS | sed -e "s|-Wl,--as-needed||"`
-cwd=`pwd`
-TOOLCHAIN_DIR="$(cd `dirname ../../toolchain` && pwd)/toolchain"
+TOOLCHAIN_DIR="$ROOT/$BUILD/toolchain"
 echo $TOOLCHAIN_DIR
-cd $cwd
 echo $SRC_DIR
-cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
+export PYTHON_EXEC="$TOOLCHAIN_DIR/armv6zk-openelec-linux-gnueabi/sysroot/usr/bin/python2.7"
+cmake -G Ninja -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
       -DCMAKE_INSTALL_PREFIX=$INSTALL/usr \
       -DENABLE_PYTHON=on \
       -DSWIG_EXECUTABLE=$TOOLCHAIN_DIR/bin/swig \
@@ -55,7 +53,8 @@ cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
       -DLIBUSBDIR=$SYSROOT_PREFIX/usr \
       -DOPTIONAL_INCLUDE_DIR=$SYSROOT_PREFIX/usr/include \
       -DCMAKE_INCLUDE_PATH="$SYSROOT_PREFIX/usr/include/interface/vmcs_host/linux;$SYSROOT_PREFIX/usr/include/interface/vcos/pthreads;$TOOLCHAIN_DIR/x86_64-openelec-linux-gnu/sysroot/usr/include/python2.7/" \
-      -DRPI_EXTERNAL_PYTHON_HOME="$TOOLCHAIN_DIR/x86_64-openelec-linux-gnu/sysroot/usr" \
+      -DPYTHON_EXEC="$PYTHON_EXEC" \
+      -DEXTERNAL_PYTHON_HOME="$TOOLCHAIN_DIR/x86_64-openelec-linux-gnu/sysroot/usr" \
       -DTARGET_PLATFORM=LINUX \
       -DTARGET_LINUX=1 \
       -DTARGET_ION=1 \
@@ -66,4 +65,5 @@ cmake -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
       $SRC_DIR
 
 pwd
-make VERBOSE=1 -j`nproc`
+#make VERBOSE=1 -j`nproc`
+ninja -j `nproc`

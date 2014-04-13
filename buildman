@@ -108,24 +108,31 @@ def  build(config):
     if (config.force):
         os.system("rm -r {}/build.rasplex-{}.{}-{}-{}/.stamps/plexht".format(SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype))
 
-    if not os.path.isdir("{}/plex-home-theater/.git".format(SCRIPTDIR,config.oeversion,config.buildtype)):
-        os.system("git submodule init")
-        os.system("git submodule update")
-
     
     if config.version == "wip":
         if not os.path.isdir("{}/build.rasplex-{}.{}-{}-{}".format(SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype)):
             os.mkdir("{}/build.rasplex-{}.{}-{}-{}".format(SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype))
         os.system("ln -sf {}/plex-home-theater {}/build.rasplex-{}.{}-{}-{}/plexht-{}".format(SCRIPTDIR,SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype,config.version))
+        version = os.popen("git --git-dir={}/plex-home-theater/.git  rev-parse HEAD".format(SCRIPTDIR)).read().strip()
 
     else:
         print "Running build against ref {}".format(config.version)
         os.system("mkdir -p {}/build.rasplex-{}.{}-{}-{}/plexht-{}".format(SCRIPTDIR,config.project,config.arch, config.oeversion,config.buildtype, config.version))
+        version = os.popen("git --git-dir={}/plex-home-theater/.git  rev-parse {}".format(SCRIPTDIR, config.version)).read().strip()
         os.system("git --git-dir={}/plex-home-theater/.git  fetch".format(SCRIPTDIR))
         #os.system("git --git-dir={}/plex-home-theater/.git checkout {}".format(SCRIPTDIR,config.version)) 
         os.system("git --work-tree={}/build.rasplex-{}.{}-{}-{}/plexht-{}  --git-dir={}/plex-home-theater/.git checkout {} -- .".format(
                                                                             SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype,config.version,SCRIPTDIR,config.version))
         os.system("cp {}/tools/rasplex/sync-repo  {}/build.rasplex-{}.{}-{}-{}/plexht-{}".format(SCRIPTDIR,SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype,config.version)) 
+
+        verfile = open ("{}/build.rasplex-RPi.arm-{}-{}/plexht-{}/rasplex_version.txt".format(SCRIPTDIR,config.oeversion,config.buildtype,config.version),'w')
+        verfile.write(config.version.replace("RP-",""))
+        verfile.close()
+
+
+    verfile = open ("{}/build.rasplex-RPi.arm-{}-{}/plexht-{}/GitRevision.txt".format(SCRIPTDIR,config.oeversion,config.buildtype,config.version),'w')
+    verfile.write(version)
+    verfile.close()
 
     if config.ci:
         print "building in CI mode"
