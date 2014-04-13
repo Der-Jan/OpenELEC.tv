@@ -103,7 +103,7 @@ def  build(config):
         for stamp in kernel_stamps:
             if stamp != "":
                 print "deleting stamp {}".format(stamp)
-                os.system("rm -r {}/build.rasplex-RPi.arm-{}-{}/.stamps/{}".format(SCRIPTDIR,config.oeversion,config.buildtype,stamp))
+                os.system("rm -r {}/build.rasplex-{}.{}-{}-{}/.stamps/{}".format(SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype,stamp))
 
     if (config.force):
         os.system("rm -r {}/build.rasplex-{}.{}-{}-{}/.stamps/plexht".format(SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype))
@@ -116,16 +116,16 @@ def  build(config):
     if config.version == "wip":
         if not os.path.isdir("{}/build.rasplex-{}.{}-{}-{}".format(SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype)):
             os.mkdir("{}/build.rasplex-{}.{}-{}-{}".format(SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype))
-        os.system("ln -sf {}/plex-home-theater {}/build.rasplex-{}.{}-{}/plexht-{}".format(SCRIPTDIR,SCRIPTDIR,config.project,config.arch,config.oeversion,config.version))
+        os.system("ln -sf {}/plex-home-theater {}/build.rasplex-{}.{}-{}-{}/plexht-{}".format(SCRIPTDIR,SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype,config.version))
 
     else:
         print "Running build against ref {}".format(config.version)
-        os.system("mkdir -p {}/build.rasplex-{}.{}-{}/plexht-{}".format(SCRIPTDIR,config.project,config.arch, config.oeversion, config.version))
+        os.system("mkdir -p {}/build.rasplex-{}.{}-{}-{}/plexht-{}".format(SCRIPTDIR,config.project,config.arch, config.oeversion,config.buildtype, config.version))
         os.system("git --git-dir={}/plex-home-theater/.git  fetch".format(SCRIPTDIR))
         #os.system("git --git-dir={}/plex-home-theater/.git checkout {}".format(SCRIPTDIR,config.version)) 
-        os.system("git --work-tree={}/build.rasplex-{}.{}-{}/plexht-{}  --git-dir={}/plex-home-theater/.git checkout {} -- .".format(
-                                                                            SCRIPTDIR,config.project,config.arch,config.oeversion,config.version,SCRIPTDIR,config.version))
-        os.system("cp {}/tools/rasplex/sync-repo  {}/build.rasplex-{}.{}-{}/plexht-{}".format(SCRIPTDIR,SCRIPTDIR,config.project,config.arch,config.oeversion,config.version)) 
+        os.system("git --work-tree={}/build.rasplex-{}.{}-{}-{}/plexht-{}  --git-dir={}/plex-home-theater/.git checkout {} -- .".format(
+                                                                            SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype,config.version,SCRIPTDIR,config.version))
+        os.system("cp {}/tools/rasplex/sync-repo  {}/build.rasplex-{}.{}-{}-{}/plexht-{}".format(SCRIPTDIR,SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype,config.version)) 
 
     if config.ci:
         print "building in CI mode"
