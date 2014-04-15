@@ -125,12 +125,12 @@ def  build(config):
                                                                             SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype,config.version,SCRIPTDIR,config.version))
         os.system("cp {}/tools/rasplex/sync-repo  {}/build.rasplex-{}.{}-{}-{}/plexht-{}".format(SCRIPTDIR,SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype,config.version)) 
 
-        verfile = open ("{}/build.rasplex-RPi.arm-{}-{}/plexht-{}/rasplex_version.txt".format(SCRIPTDIR,config.oeversion,config.buildtype,config.version),'w')
+        verfile = open ("{}/build.rasplex-{}.{}-{}-{}/plexht-{}/rasplex_version.txt".format(SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype,config.version),'w')
         verfile.write(config.version.replace("RP-",""))
         verfile.close()
 
 
-    verfile = open ("{}/build.rasplex-RPi.arm-{}-{}/plexht-{}/GitRevision.txt".format(SCRIPTDIR,config.oeversion,config.buildtype,config.version),'w')
+    verfile = open ("{}/build.rasplex-{}.{}-{}-{}/plexht-{}/GitRevision.txt".format(SCRIPTDIR,config.project,config.arch,config.oeversion,config.buildtype,config.version),'w')
     verfile.write(version)
     verfile.close()
 

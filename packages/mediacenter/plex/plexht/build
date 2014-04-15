@@ -52,7 +52,7 @@ TOOLCHAIN_DIR="$ROOT/$BUILD/toolchain"
 
 echo $TOOLCHAIN_DIR
 echo $SRC_DIR
-export PYTHON_EXEC="$TOOLCHAIN_DIR/armv6zk-openelec-linux-gnueabi/sysroot/usr/bin/python2.7"
+export PYTHON_EXEC="$TOOLCHAIN_DIR/x86_64-openelec-linux-gnu/sysroot/usr/bin/python2.7"
 cmake -G Ninja -DCMAKE_TOOLCHAIN_FILE=$CMAKE_CONF \
       -DCMAKE_INSTALL_PREFIX=$INSTALL/usr \
       -DENABLE_PYTHON=on \
